@@ -11,6 +11,8 @@ def print_puzzle(node):
     print("+ - + - + - +")
     print("| {} | {} | {} |".format(node[6], node[7], node[8]))
     print("+ - + - + - +")
+    print("DEPTH :", node[9], "| HX :", node[10])
+    print()
 
 def isFinal(node):
     if node[:9] == goalNode:
@@ -28,7 +30,7 @@ def Hx(node):
         current_cost = abs(goal_pos[data]['row']-current_row) + abs(goal_pos[data]['col']-current_col)
         total_cost += current_cost
     
-    print(total_cost)
+    # print(total_cost)
     return total_cost
 
 
@@ -56,13 +58,13 @@ if __name__ == '__main__':
             zero_loc = i
             break
 
-    print("Zero loc: ", zero_loc)
+    # print("Zero loc: ", zero_loc)
 
     print("START NODE:")
-    print_puzzle(startNode)
+    hx=Hx(startNode)
+    print_puzzle(startNode+[0,hx])
     q = Q.PriorityQueue()
-    q.put((Hx(startNode),startNode))
-
+    q.put((hx,startNode+[0,hx]))
 
     found = False
     while(not found):
@@ -72,14 +74,17 @@ if __name__ == '__main__':
             if (current_node[i] == 0):
                 zero_loc = i
                 break
-                
+
         if(DOWN_ENABLE[zero_loc]):
             temp = current_node.copy()
             temp[zero_loc] = temp[zero_loc-3];
             temp[zero_loc-3] = 0;
             if(temp not in visited_node):
+                hx=Hx(temp)
+                temp[9]+=1
+                temp[10]=hx
                 # Push to queue
-                q.put((Hx(temp), temp))
+                q.put((hx, temp))
                 print("DOWN")
                 print_puzzle(temp)
                 if(isFinal(temp)):
@@ -90,8 +95,11 @@ if __name__ == '__main__':
             temp[zero_loc] = temp[zero_loc+3];
             temp[zero_loc+3] = 0;
             if(temp not in visited_node):
+                hx=Hx(temp)
+                temp[9]+=1
+                temp[10]=hx
                 # Push to queue
-                q.put((Hx(temp), temp))
+                q.put((hx, temp))
                 print("UP")
                 print_puzzle(temp)
                 if(isFinal(temp)):
@@ -102,8 +110,11 @@ if __name__ == '__main__':
             temp[zero_loc] = temp[zero_loc+1];
             temp[zero_loc+1] = 0;
             if(temp not in visited_node):
+                hx=Hx(temp)
+                temp[9]+=1
+                temp[10]=hx
                 # Push to queue
-                q.put((Hx(temp), temp))
+                q.put((hx, temp))
                 print("LEFT")
                 print_puzzle(temp)
                 if(isFinal(temp)):
@@ -114,8 +125,11 @@ if __name__ == '__main__':
             temp[zero_loc] = temp[zero_loc-1];
             temp[zero_loc-1] = 0;
             if(temp not in visited_node):
+                hx=Hx(temp)
+                temp[9]+=1
+                temp[10]=hx
                 # Push to queue
-                q.put((Hx(temp), temp))
+                q.put((hx, temp))
                 print("RIGHT")
                 print_puzzle(temp)
                 if(isFinal(temp)):
