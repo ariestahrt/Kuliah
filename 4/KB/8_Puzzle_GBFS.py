@@ -1,7 +1,15 @@
+"""
+I Kadek Agus Ariesta Putra - 05111940000105
+Putu Ananda Satria Adi - 05111940000113
+Farhan Arifandi - 05111940000061
+"""
+
 try:
     import Queue as Q  # ver. < 3.0
 except ImportError:
     import queue as Q
+
+import time as time
 
 def print_puzzle(node):
     print("+ - + - + - +")
@@ -11,7 +19,7 @@ def print_puzzle(node):
     print("+ - + - + - +")
     print("| {} | {} | {} |".format(node[6], node[7], node[8]))
     print("+ - + - + - +")
-    print("DEPTH :", node[9], "| HX :", node[10])
+    print("DEPTH :", node[9], "| HX :", node[10], "| SEQUENCE :", node[11])
     print()
 
 def isFinal(node):
@@ -35,8 +43,8 @@ def Hx(node):
 
 
 if __name__ == '__main__':
-    startNode = [2,8,3, 1,6,4, 7,0,5]
-    goalNode = [1,2,3, 8,0,4, 7,6,5]
+    startNode = [7,2,4, 5,0,6, 8,3,1]
+    goalNode = [0,1,2, 3,4,5, 6,7,8]
     goal_pos = [None] * 9
 
     for index in range(0,9):
@@ -62,9 +70,12 @@ if __name__ == '__main__':
 
     print("START NODE:")
     hx=Hx(startNode)
-    print_puzzle(startNode+[0,hx])
+    print_puzzle(startNode+[0,hx,0])
     q = Q.PriorityQueue()
-    q.put((hx,startNode+[0,hx]))
+    q.put((hx,startNode+[0,hx,0]))
+
+    node_seq=0
+    t0 = time.time()
 
     found = False
     while(not found):
@@ -75,62 +86,83 @@ if __name__ == '__main__':
                 zero_loc = i
                 break
 
-        if(DOWN_ENABLE[zero_loc]):
-            temp = current_node.copy()
-            temp[zero_loc] = temp[zero_loc-3];
-            temp[zero_loc-3] = 0;
-            if(temp not in visited_node):
-                hx=Hx(temp)
-                temp[9]+=1
-                temp[10]=hx
-                # Push to queue
-                q.put((hx, temp))
-                print("DOWN")
-                print_puzzle(temp)
-                if(isFinal(temp)):
-                    found = True
-
-        if(UP_ENABLE[zero_loc]):
-            temp = current_node.copy()
-            temp[zero_loc] = temp[zero_loc+3];
-            temp[zero_loc+3] = 0;
-            if(temp not in visited_node):
-                hx=Hx(temp)
-                temp[9]+=1
-                temp[10]=hx
-                # Push to queue
-                q.put((hx, temp))
-                print("UP")
-                print_puzzle(temp)
-                if(isFinal(temp)):
-                    found = True
-
-        if(LEFT_ENABLE[zero_loc]):
-            temp = current_node.copy()
-            temp[zero_loc] = temp[zero_loc+1];
-            temp[zero_loc+1] = 0;
-            if(temp not in visited_node):
-                hx=Hx(temp)
-                temp[9]+=1
-                temp[10]=hx
-                # Push to queue
-                q.put((hx, temp))
-                print("LEFT")
-                print_puzzle(temp)
-                if(isFinal(temp)):
-                    found = True
-
         if(RIGHT_ENABLE[zero_loc]):
             temp = current_node.copy()
-            temp[zero_loc] = temp[zero_loc-1];
-            temp[zero_loc-1] = 0;
-            if(temp not in visited_node):
+            temp[zero_loc] = temp[zero_loc-1]
+            temp[zero_loc-1] = 0
+            if(temp[:9] not in visited_node):
+                node_seq+=1
                 hx=Hx(temp)
                 temp[9]+=1
                 temp[10]=hx
+                temp[11]=node_seq
                 # Push to queue
+                visited_node.append(temp[:9])
                 q.put((hx, temp))
                 print("RIGHT")
                 print_puzzle(temp)
                 if(isFinal(temp)):
                     found = True
+                    break
+
+        if(LEFT_ENABLE[zero_loc]):
+            temp = current_node.copy()
+            temp[zero_loc] = temp[zero_loc+1]
+            temp[zero_loc+1] = 0
+            if(temp[:9] not in visited_node):
+                node_seq+=1
+                hx=Hx(temp)
+                temp[9]+=1
+                temp[10]=hx
+                temp[11]=node_seq
+                # Push to queue
+                visited_node.append(temp[:9])
+                q.put((hx, temp))
+                print("LEFT")
+                print_puzzle(temp)
+                if(isFinal(temp)):
+                    found = True
+                    break
+
+        if(DOWN_ENABLE[zero_loc]):
+            temp = current_node.copy()
+            temp[zero_loc] = temp[zero_loc-3]
+            temp[zero_loc-3] = 0
+            if(temp[:9] not in visited_node):
+                node_seq+=1
+                hx=Hx(temp)
+                temp[9]+=1
+                temp[10]=hx
+                temp[11]=node_seq
+                # Push to queue
+                visited_node.append(temp[:9])
+                q.put((hx, temp))
+                print("DOWN")
+                print_puzzle(temp)
+                if(isFinal(temp)):
+                    found = True
+                    break
+
+        if(UP_ENABLE[zero_loc]):
+            temp = current_node.copy()
+            temp[zero_loc] = temp[zero_loc+3]
+            temp[zero_loc+3] = 0
+            if(temp[:9] not in visited_node):
+                node_seq+=1
+                hx=Hx(temp)
+                temp[9]+=1
+                temp[10]=hx
+                temp[11]=node_seq
+                # Push to queue
+                visited_node.append(temp[:9])
+                q.put((hx, temp))
+                print("UP")
+                print_puzzle(temp)
+                if(isFinal(temp)):
+                    found = True
+                    break
+
+
+
+    t1 = time.time()
+    print('Time:', t1-t0)
